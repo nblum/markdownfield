@@ -1,11 +1,10 @@
 import jQuery from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import { ApolloProvider } from 'react-apollo';
-import { provideInjector } from 'lib/Injector';
-const InjectableInsertMediaModal = window.InsertMediaModal ? provideInjector(window.InsertMediaModal.default) : null;
-
+import { loadComponent } from 'lib/Injector';
+import InsertMediaModal from 'containers/InsertMediaModal/InsertMediaModal';
+const InjectableInsertMediaModal = loadComponent(InsertMediaModal);
 
 jQuery.entwine('ss', ($) => {
 
@@ -33,7 +32,7 @@ jQuery.entwine('ss', ($) => {
          * @param {boolean} show
          * @private
          */
-        _renderModal(show) {
+        _renderModal(isOpen) {
             if(!InjectableInsertMediaModal) {
                 throw new Error('Embed is not supported, Install silverstripe/asset-admin');
             }
@@ -47,21 +46,21 @@ jQuery.entwine('ss', ($) => {
 
             // create/update the react component
             ReactDOM.render(
-            <ApolloProvider store={store} client={client}>
-                <InjectableInsertMediaModal
-                    title={false}
-                    type="insert-media"
-                    show={show}
-                    onInsert={handleInsert}
-                    onHide={handleHide}
-                    bodyClassName="modal__dialog"
-                    className="insert-media-react__dialog-wrapper"
-                    requireLinkText={false}
-                    fileAttributes={attrs}
-                />
+                <ApolloProvider store={store} client={client}>
+                    <InjectableInsertMediaModal
+                        isOpen={isOpen}
+                        title={false}
+                        type="insert-media"
+                        onInsert={handleInsert}
+                        onHide={handleHide}
+                        bodyClassName="modal__dialog"
+                        className="insert-media-react__dialog-wrapper"
+                        requireLinkText={false}
+                        fileAttributes={attrs}
+                    />
                 </ApolloProvider>,
                 this[0]
-        );
+            );
         },
 
         /**
